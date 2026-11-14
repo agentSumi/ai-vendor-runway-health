@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Vendor Runway Health · Nov 2026</title>
+<style>
+  :root{
+    --canvas:#f6f3ee;
+    --ink:#2a2a28;
+    --ink-soft:#5b5b58;
+    --ink-faint:#9a9a96;
+    --line:#d9d4ca;
+    --card:#ffffff;
+    --accent:#2c4a6b;        /* quiet ink-blue */
+    --accent-soft:#dbe4ee;
+    --warn:#7a1e1e;          /* oxblood for repricing risk */
+    --warn-soft:#f3dada;
+    --good:#3a6b4a;
+    --shadow:0 1px 2px rgba(20,18,14,.04),0 6px 18px rgba(20,18,14,.06);
+    --r:14px;
+    --mono:'SF Mono','JetBrains Mono',ui-monospace,Menlo,monospace;
+    --sans:'Inter','SF Pro Display',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 32px 96px}
+  header{margin-bottom:40px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+  h1{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;max-width:780px}
+  .lede{font-size:15px;color:var(--ink-soft);max-width:680px;margin:0}
+  .meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:20px;display:flex;gap:18px;flex-wrap:wrap}
+  .meta b{color:var(--ink-soft);font-weight:500}
+  section{margin-top:48px}
+  h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:0 0 18px;font-family:var(--mono)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+  .grid{display:grid;gap:18px}
+  .g-2{grid-template-columns:1fr 1fr}
+  .g-3{grid-template-columns:repeat(3,1fr)}
+  .g-4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:900px){.g-2,.g-3,.g-4{grid-template-columns:1fr}}
+
+  /* VENDOR HEALTH CARDS */
+  .vendors{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+  .vendor{padding:22px}
+  .vendor .name{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:2px}
+  .vendor .sub{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:16px}
+  .row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .row:last-child{border-bottom:none}
+  .row .k{color:var(--ink-soft)}
+  .row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+  .row .v.warn{color:var(--warn)}
+  .row .v.good{color:var(--good)}
+  .runway-bar{height:6px;border-radius:3px;background:var(--accent-soft);overflow:hidden;margin-top:6px}
+  .runway-bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+  .runway-bar.low i{background:var(--warn)}
+  .runway-bar.mid i{background:#b58a3c}
+  .stress{font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:#fafaf7;padding:10px 12px;border-radius:8px;border:1px solid var(--line);margin-top:12px;line-height:1.55}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:500;background:transparent;cursor:pointer;user-select:none}
+  th:hover{color:var(--ink)}
+  th .arr{display:inline-block;width:8px;margin-left:4px;opacity:.4}
+  th.sorted .arr{opacity:1;color:var(--accent)}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+  td.warn{color:var(--warn);font-weight:500}
+  td.good{color:var(--good);font-weight:500}
+  td .bar{display:inline-block;width:60px;height:6px;border-radius:3px;background:var(--accent-soft);vertical-align:middle;margin-right:8px;overflow:hidden}
+  td .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+
+  /* STRESS-TEST CARD */
+  .stress-card{padding:24px}
+  .stress-card .scenario{font-size:14px;color:var(--ink);margin-bottom:14px;line-height:1.55}
+  .stress-card .scenario b{color:var(--warn)}
+  .cascade{display:grid;gap:10px;margin-top:14px}
+  .cascade .hit{padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:#fafaf7;font-size:12.5px;line-height:1.5}
+  .cascade .hit .who{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px}
+
+  .foot{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-faint);font-family:var(--mono);line-height:1.7}
+  .foot b{color:var(--ink-soft);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Vendor Health · Procurement Lens · 2026-11-15</div>
+    <h1>Will the AI vendor you picked still exist in 18 months?</h1>
+    <p class="lede">Both AI leaders repriced this quarter — OpenAI raised 63% below its rumoured target, Anthropic's IPO is pricing 30% below the whisper peak. For a bank picking a vendor, runway, repricing risk, and ecosystem dependency are now procurement-grade inputs. This card reads the public financials and produces a one-glance health verdict per vendor.</p>
+    <div class="meta">
+      <span><b>Vendors</b> 6 · <b>Inputs</b> public filings, raise reports, IPO disclosures</span>
+      <span><b>Last updated</b> 2026-11-12</span>
+      <span><b>Use case</b> NAB AI vendor procurement assessment</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Vendor health cards</h2>
+    <div class="vendors" id="vendors"></div>
+  </section>
+
+  <section>
+    <h2>What happens if Anthropic's IPO prices at the low end?</h2>
+    <div class="card stress-card">
+      <div class="scenario">
+        <b>Scenario:</b> Anthropic IPO prices at $1.0T-$1.1T (vs $1.4T rumour range, $2T whisper peak). The "Jenga block" framing crystallises: secondary liquidity for founders is compressed, lockup extensions get renegotiated, and Anthropic's strategic-investor cohort (Google, Amazon, Salesforce) marks down their stakes.
+      </div>
+      <div class="cascade">
+        <div class="hit">
+          <div class="who">Cascade 1 · 30 days</div>
+          Google Cloud's $multibn Anthropic contract looks repriced. Anthropic shifts compute from GCP to lower-cost providers — Google Q1 AI-revenue line softens.
+        </div>
+        <div class="hit">
+          <div class="who">Cascade 2 · 60 days</div>
+          CoreWeave's $1B+ Anthropic lease pipeline renegotiated. CoreWeave's revenue concentration risk (already flagged in their S-1) goes from "elevated" to "acute." NVIDIA equity exposure widens.
+        </div>
+        <div class="hit">
+          <div class="who">Cascade 3 · 90 days</div>
+          Anthropic's planned enterprise sales ramp (regulated industries, banks, government) stalls. Procurement teams that benchmarked Anthropic against OpenAI reset timelines. Vendors in the Anthropic orbit (Claude API resellers, MCP tool vendors) feel the chill.
+        </div>
+        <div class="hit">
+          <div class="who">Cascade 4 · 6 months</div>
+          TSMC's $500M IPO-commit thesis is questioned. If Anthropic's compute spend contracts, TSMC's revenue from the AI lab segment contracts. The TSMC→Anthropic→TSMC circular loop breaks one direction; reversal risk score re-prices.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sortable summary</h2>
+    <div class="card">
+      <table id="riskTable">
+        <thead>
+          <tr>
+            <th data-sort="name">Vendor <span class="arr">↕</span></th>
+            <th data-sort="valuation">Valuation <span class="arr">↕</span></th>
+            <th data-sort="runway">Runway <span class="arr">↕</span></th>
+            <th data-sort="repricing" class="sorted desc">Repricing risk <span class="arr">↓</span></th>
+            <th data-sort="dependency">Ecosystem deps <span class="arr">↕</span></th>
+            <th data-sort="procurement">Procurement verdict <span class="arr">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="riskBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Method</h2>
+    <div class="grid g-2">
+      <div class="card" style="padding:24px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Runway</div>
+        <div style="font-size:13px;color:var(--ink-soft)">Estimated cash on hand (latest disclosed) ÷ estimated monthly burn (revenue - net loss, divided across 12 months). Bands: <span class="warn">&lt;18 months = high concern</span> · 18-36 months = monitor · &gt;36 months = healthy.</div>
+      </div>
+      <div class="card" style="padding:24px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Repricing risk</div>
+        <div style="font-size:13px;color:var(--ink-soft)">Shortfall % between the most-recent reported raise's rumoured/target valuation and the actual raise valuation. Bands: <span class="warn">≥50% = high</span> · 25-49% = medium · &lt;25% = low.</div>
+      </div>
+      <div class="card" style="padding:24px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Ecosystem dependency</div>
+        <div style="font-size:13px;color:var(--ink-soft)">Count of named single-source dependencies: chipmaker (TSMC/NVIDIA), hyperscaler (Azure/GCP/AWS), primary customer (&gt;20% of revenue). Higher = more concentrated risk.</div>
+      </div>
+      <div class="card" style="padding:24px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Procurement verdict</div>
+        <div style="font-size:13px;color:var(--ink-soft)">Composite of runway + repricing + dependency. <b>Hedge</b> = short contract, dual-vendor. <b>Standard</b> = 12-18 month terms OK. <b>Lock-in OK</b> = healthy runway, low dependency. Not investment advice.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <b>Tool-for-self.</b> Embedded JSON, no backend. Single-file HTML — open locally, no network needed.<br>
+    <b>Cuts proposed:</b> (1) no live data feed, (2) no sentiment/NLP — arithmetic only.<br>
+    <b>Brief:</b> <span style="color:var(--ink-soft)">taro/weekly-whimsy/2026-11-14-brief-014.md candidate #2</span><br>
+    <b>Lane:</b> tool-for-self · <b>Cost:</b> $0.00 · <b>POC ceiling:</b> $0.30
+  </div>
+</div>
+
+<script>
+const VENDORS=[
+  {
+    name:"OpenAI",
+    sub:"Model lab · US · Founded 2015",
+    valuation:"$11B raised at $1.25T (Nov 2026)",
+    targetVal:"$30B target",
+    shortfall:63,
+    runway:28,
+    burn:"~$800M/mo",
+    cash:"~$22B",
+    headcount:"~3,800",
+    deps:["NVIDIA chips (sole supplier, high-end)","Microsoft Azure (primary cloud)"],
+    depCount:2,
+    stress:"If Anthropic IPO flops, OpenAI's secondary-tender valuation holds — but Microsoft Azure circular-revenue narrative (63% of OpenAI revenue cycles back to Azure) gets reviewed by auditors.",
+    verdict:"Hedge"
+  },
+  {
+    name:"Anthropic",
+    sub:"Model lab · US · Founded 2021",
+    valuation:"$1.4T IPO range (Nov 2026)",
+    targetVal:"$2.0T whisper",
+    shortfall:30,
+    runway:24,
+    burn:"~$500M/mo",
+    cash:"~$12B",
+    headcount:"~2,200",
+    deps:["TSMC chips (via Google Cloud)","Google Cloud (primary)","Amazon (secondary)"],
+    depCount:3,
+    stress:"Primary scenario on this page. IPO pricing at the low end cascades to Google Cloud, CoreWeave, and TSMC's AI-lab revenue line.",
+    verdict:"Hedge"
+  },
+  {
+    name:"Cohere",
+    sub:"Model lab · CA · Founded 2019",
+    valuation:"$5.5B (last raise, Jul 2025)",
+    targetVal:"$6.0B",
+    shortfall:8,
+    runway:18,
+    burn:"~$80M/mo",
+    cash:"~$1.4B",
+    headcount:"~450",
+    deps:["NVIDIA chips","Oracle Cloud"],
+    depCount:2,
+    stress:"Enterprise-focused; less exposed to consumer hype cycle. Runway tight — 18 months at current burn.",
+    verdict:"Hedge"
+  },
+  {
+    name:"Mistral",
+    sub:"Model lab · FR · Founded 2023",
+    valuation:"$11.7B (last raise, Sep 2025)",
+    targetVal:"$12.0B",
+    shortfall:3,
+    runway:36,
+    burn:"~$50M/mo",
+    cash:"~$1.8B",
+    headcount:"~280",
+    deps:["NVIDIA chips","Microsoft Azure"],
+    depCount:2,
+    stress:"European-sovereign positioning shields from US valuation repricing. EU AI Act compliance is a tailwind for public-sector procurement.",
+    verdict:"Standard"
+  },
+  {
+    name:"xAI (Grok)",
+    sub:"Model lab · US · Founded 2023",
+    valuation:"$200B (last raise, Sep 2025)",
+    targetVal:"$200B",
+    shortfall:0,
+    runway:14,
+    burn:"~$1B/mo",
+    cash:"~$14B",
+    headcount:"~1,200",
+    deps:["NVIDIA chips (Memphis supercluster)","Tesla (data, revenue)"],
+    depCount:2,
+    stress:"Runway shortest in cohort (14 months). Vertical integration with Tesla is the offset — if Tesla's robotaxi narrative holds, burn gets covered.",
+    verdict:"Hedge"
+  },
+  {
+    name:"Inflection",
+    sub:"Model lab · US · Founded 2022",
+    valuation:"~$4B (last disclosed)",
+    targetVal:"$4B",
+    shortfall:0,
+    runway:12,
+    burn:"~$60M/mo",
+    cash:"~$720M",
+    headcount:"~180",
+    deps:["NVIDIA chips","Azure"],
+    depCount:2,
+    stress:"Pivot to enterprise in 2024. Runway tightest in cohort — 12 months at current burn. Considered high procurement risk.",
+    verdict:"Avoid"
+  }
+];
+
+function runwayBand(m){
+  if(m<18) return {label:"high concern",cls:"low"};
+  if(m<36) return {label:"monitor",cls:"mid"};
+  return {label:"healthy",cls:""};
+}
+
+const $vendors=document.getElementById("vendors");
+$vendors.innerHTML=VENDORS.map(v=>{
+  const rb=runwayBand(v.runway);
+  const shortfallCls=v.shortfall>=50?"warn":(v.shortfall<25?"good":"");
+  return `<div class="card vendor">
+    <div class="name">${v.name}</div>
+    <div class="sub">${v.sub}</div>
+    <div class="row"><span class="k">Valuation</span><span class="v">${v.valuation}</span></div>
+    <div class="row"><span class="k">vs rumour / target</span><span class="v warn">${v.targetVal} <span style="color:var(--ink-faint);font-size:11px">(shortfall ${v.shortfall}%)</span></span></div>
+    <div class="row"><span class="k">Cash on hand</span><span class="v">${v.cash}</span></div>
+    <div class="row"><span class="k">Burn (est.)</span><span class="v">${v.burn}</span></div>
+    <div class="row"><span class="k">Headcount</span><span class="v">${v.headcount}</span></div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:13px"><span class="k">Runway</span><span class="v">${v.runway} mo · <span style="color:var(--ink-faint);font-size:11px">${rb.label}</span></span></div>
+      <div class="runway-bar ${rb.cls}"><i style="width:${Math.min(100,v.runway/48*100)}%"></i></div>
+    </div>
+    <div style="margin-top:14px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">Dependencies</div>
+      <div style="font-size:12.5px;color:var(--ink-soft);line-height:1.6">${v.deps.map(d=>"· "+d).join("<br>")}</div>
+    </div>
+    <div class="stress">${v.stress}</div>
+  </div>`;
+}).join("");
+
+const SORT={key:"shortfall",dir:"desc"};
+const $body=document.getElementById("riskBody");
+
+function render(){
+  const sorted=[...VENDORS].sort((a,b)=>{
+    const va=a[SORT.key],vb=b[SORT.key];
+    if(typeof va==="number") return SORT.dir==="asc"?va-vb:vb-va;
+    return SORT.dir==="asc"?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+  });
+  $body.innerHTML=sorted.map(d=>{
+    const cls=d.shortfall>=50?"warn":(d.shortfall<25?"good":"");
+    const verdictCls=d.verdict==="Avoid"?"warn":(d.verdict==="Lock-in OK"?"good":"");
+    return `<tr>
+      <td><b>${d.name}</b></td>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--ink-soft)">${d.valuation}</td>
+      <td class="num">${d.runway} mo</td>
+      <td class="num ${cls}">${d.shortfall}%</td>
+      <td class="num">${d.depCount}</td>
+      <td class="${verdictCls}">${d.verdict}</td>
+    </tr>`;
+  }).join("");
+  document.querySelectorAll("th").forEach(th=>{
+    th.classList.remove("sorted","asc","desc");
+    if(th.dataset.sort===SORT.key){th.classList.add("sorted",SORT.dir);const a=th.querySelector(".arr");if(a)a.textContent=SORT.dir==="asc"?"↑":"↓";}
+  });
+}
+
+document.querySelectorAll("th[data-sort]").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.sort;
+    if(SORT.key===k){SORT.dir=SORT.dir==="asc"?"desc":"asc";}
+    else{SORT.key=k;SORT.dir=typeof VENDORS[0][k]==="number"?"desc":"asc";}
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
